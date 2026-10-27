@@ -1,0 +1,83 @@
+country;dimension;question_id;question_label;question_text;score
+Polen;Economic;Q1;Q1 (dummy);Placeholder: first economic question;3
+Polen;Economic;Q2;Q2 (dummy);Placeholder: second economic question;2
+Tschechien;Economic;Q1;;;4
+Tschechien;Economic;Q2;;;1
+Slowakei;Economic;Q1;;;1
+Slowakei;Economic;Q2;;;5
+Ungarn;Economic;Q1;;;1
+Ungarn;Economic;Q2;;;3
+Rumänien;Economic;Q1;;;5
+Rumänien;Economic;Q2;;;1
+Bulgarien;Economic;Q1;;;5
+Bulgarien;Economic;Q2;;;2
+Slowenien;Economic;Q1;;;1
+Slowenien;Economic;Q2;;;1
+Kroatien;Economic;Q1;;;4
+Kroatien;Economic;Q2;;;4
+Portugal;Economic;Q1;;;1
+Portugal;Economic;Q2;;;2
+Spanien;Economic;Q1;;;1
+Spanien;Economic;Q2;;;5
+Italien;Economic;Q1;;;4
+Italien;Economic;Q2;;;1
+Griechenland;Economic;Q1;;;5
+Griechenland;Economic;Q2;;;1
+Serbien;Economic;Q1;;;2
+Serbien;Economic;Q2;;;5
+Nordmazedonien;Economic;Q1;;;1
+Nordmazedonien;Economic;Q2;;;5
+Bosnien und Herzegowina;Economic;Q1;;;5
+Bosnien und Herzegowina;Economic;Q2;;;4
+Albanien;Economic;Q1;;;1
+Albanien;Economic;Q2;;;2
+Montenegro;Economic;Q1;;;1
+Montenegro;Economic;Q2;;;5
+Kosovo;Economic;Q1;;;
+Kosovo;Economic;Q2;;;
+Moldau;Economic;Q1;;;2
+Moldau;Economic;Q2;;;
+Türkei;Economic;Q1;;;3
+Türkei;Economic;Q2;;;4
+Deutschland;Economic;Q1;;;2
+Deutschland;Economic;Q2;;;5
+Mexiko;Economic;Q1;;;1
+Mexiko;Economic;Q2;;;5
+Costa Rica;Economic;Q1;;;3
+Costa Rica;Economic;Q2;;;5
+Dominikanische Republik;Economic;Q1;;;2
+Dominikanische Republik;Economic;Q2;;;1
+Panama;Economic;Q1;;;5
+Panama;Economic;Q2;;;5
+Guatemala;Economic;Q1;;;2
+Guatemala;Economic;Q2;;;3
+El Salvador;Economic;Q1;;;1
+El Salvador;Economic;Q2;;;5
+Honduras;Economic;Q1;;;1
+Honduras;Economic;Q2;;;5
+Kolumbien;Economic;Q1;;;1
+Kolumbien;Economic;Q2;;;5
+Ecuador;Economic;Q1;;;2
+Ecuador;Economic;Q2;;;4
+Jamaika;Economic;Q1;;;5
+Jamaika;Economic;Q2;;;4
+Trinidad und Tobago;Economic;Q1;;;3
+Trinidad und Tobago;Economic;Q2;;;4
+Belize;Economic;Q1;;;5
+Belize;Economic;Q2;;;4
+Guyana;Economic;Q1;;;3
+Guyana;Economic;Q2;;;3
+Suriname;Economic;Q1;;;2
+Suriname;Economic;Q2;;;
+Kuba;Economic;Q1;;;2
+Kuba;Economic;Q2;;;2
+Venezuela;Economic;Q1;;;1
+Venezuela;Economic;Q2;;;5
+Haiti;Economic;Q1;;;3
+Haiti;Economic;Q2;;;
+Nicaragua;Economic;Q1;;;5
+Nicaragua;Economic;Q2;;;4
+Puerto Rico;Economic;Q1;;;3
+Puerto Rico;Economic;Q2;;;4
+USA;Economic;Q1;;;3
+USA;Economic;Q2;;;5

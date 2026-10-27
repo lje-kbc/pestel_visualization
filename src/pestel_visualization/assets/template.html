@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>__TITLE__</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='2' y='2' width='13' height='13' rx='3' fill='%232c7bb6'/%3E%3Crect x='17' y='2' width='13' height='13' rx='3' fill='%23abd9e9'/%3E%3Crect x='2' y='17' width='13' height='13' rx='3' fill='%23fdae61'/%3E%3Crect x='17' y='17' width='13' height='13' rx='3' fill='%23d7191c'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --ink: #1f2933; --muted: #5f6b7a; --line: #d9dee5; --bg: #ffffff; --panel: #f6f7f9;
+    --sea: #eef3f7; --accent: #2c7bb6;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+         font: 14px/1.45 "Segoe UI", system-ui, -apple-system, Helvetica, Arial, sans-serif; }
+  .page { max-width: 1280px; margin: 0 auto; padding: 20px 16px 40px; }
+  header { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+  h1 { font-size: 22px; margin: 0 0 2px; font-weight: 600; }
+  .sub { color: var(--muted); margin: 0; }
+  .stamp { color: var(--muted); font-size: 12px; }
+  button { font: inherit; color: inherit; cursor: pointer; }
+
+  .tabs { display: flex; flex-wrap: wrap; gap: 4px; margin: 18px 0 0; border-bottom: 1px solid var(--line); }
+  .tab { border: 1px solid transparent; border-bottom: none; background: none; padding: 8px 14px;
+         border-radius: 6px 6px 0 0; color: var(--muted); margin-bottom: -1px; }
+  .tab:hover { color: var(--ink); background: var(--panel); }
+  .tab[aria-selected="true"] { color: var(--ink); background: var(--bg); border-color: var(--line); font-weight: 600; }
+  .subtabs { display: flex; flex-wrap: wrap; gap: 6px; }
+  .subtabs:empty { display: none; }
+  .subtab { border: 1px solid var(--line); background: var(--bg); border-radius: 16px; padding: 3px 12px; font-size: 13px; color: var(--muted); }
+  .subtab:hover { color: var(--ink); background: var(--panel); }
+  .subtab[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+  .view-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 12px 0 10px; flex-wrap: wrap; min-height: 32px; }
+  .view-desc { color: var(--muted); margin: 0; }
+
+  .btn { border: 1px solid var(--line); background: var(--bg); border-radius: 6px; padding: 5px 10px; }
+  .btn:hover { background: var(--panel); }
+
+  .map-wrap { position: relative; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--sea); }
+  svg.map { display: block; width: 100%; height: auto; touch-action: none; }
+  .controls { position: absolute; top: 10px; left: 10px; display: flex; gap: 4px; flex-wrap: wrap; }
+  .controls .btn { background: rgba(255,255,255,.92); font-size: 13px; padding: 4px 9px; }
+  .legend { position: absolute; left: 10px; bottom: 10px; background: rgba(255,255,255,.92); border: 1px solid var(--line);
+            border-radius: 6px; padding: 8px 10px; font-size: 12px; }
+  .legend-row { display: flex; align-items: center; gap: 6px; margin: 2px 0; }
+  .sw { width: 14px; height: 14px; border-radius: 3px; border: 1px solid rgba(0,0,0,.15); flex: none; }
+  .sw.hatch { background: repeating-linear-gradient(45deg, #c9c9c9 0 3px, #8f8f8f 3px 4.5px); }
+  .sw.partial { background: #fff; border: 1.5px dashed #444; }
+  .legend-sep { border-top: 1px solid var(--line); margin: 5px 0; }
+
+  .tooltip { position: fixed; pointer-events: none; background: #1f2933; color: #fff; padding: 5px 9px;
+             border-radius: 5px; font-size: 13px; white-space: nowrap; opacity: 0; transition: opacity .1s; z-index: 10; }
+
+  .panel { position: absolute; top: 10px; right: 10px; width: 270px; max-width: calc(100% - 20px); max-height: calc(100% - 20px);
+           background: rgba(255,255,255,.97); border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px;
+           overflow: auto; box-shadow: 0 4px 16px rgba(0,0,0,.08); }
+  .panel[hidden] { display: none; }
+  .panel h2 { font-size: 17px; margin: 0 26px 10px 0; }
+  .panel .close { position: absolute; top: 8px; right: 8px; border: none; background: none; font-size: 20px; line-height: 1; color: var(--muted); }
+  .panel h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); margin: 14px 0 4px; }
+  .prow { padding: 5px 0; border-bottom: 1px solid #eef0f3; }
+  .prow-main { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .prow.total .prow-main { font-weight: 600; }
+  .prow-note { color: var(--muted); font-size: 12px; }
+
+  .chip { display: inline-block; min-width: 26px; text-align: center; padding: 1px 7px; border-radius: 10px; font-weight: 600; font-size: 13px; }
+
+  .table-wrap { overflow-x: auto; margin-top: 18px; }
+  table { width: 100%; max-width: 640px; border-collapse: collapse; }
+  th:first-child { width: 3em; }
+  th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid #eef0f3; }
+  th { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); font-weight: 600; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  tbody tr { cursor: pointer; }
+  tbody tr:hover, tbody tr.active { background: var(--panel); }
+  .muted { color: var(--muted); }
+
+  @media (max-width: 640px) {
+    th, td { padding: 6px 5px; }
+    th { letter-spacing: 0; }
+    .legend { position: static; border: none; border-top: 1px solid var(--line); border-radius: 0; display: flex; flex-wrap: wrap; gap: 4px 12px; }
+    .panel { position: fixed; top: auto; left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 60vh; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div>
+      <h1 id="title"></h1>
+      <p class="sub" id="subtitle"></p>
+    </div>
+    <div class="stamp" id="stamp"></div>
+  </header>
+
+  <nav class="tabs" id="tabs" role="tablist"></nav>
+  <div class="view-head">
+    <div>
+      <nav class="subtabs" id="subtabs" role="tablist"></nav>
+      <p class="view-desc" id="view-desc"></p>
+    </div>
+    <button class="btn" id="export">Export PNG</button>
+  </div>
+
+  <div class="map-wrap" id="map-wrap">
+    <svg class="map" id="map" viewBox="0 0 960 500" role="img" aria-label="World map of country scores"></svg>
+    <div class="controls">
+      <button class="btn" data-zoom="world">World</button>
+      <button class="btn" data-zoom="europe">Europe</button>
+      <button class="btn" data-zoom="latam">Latin America</button>
+      <button class="btn" data-zoom="in" aria-label="Zoom in">+</button>
+      <button class="btn" data-zoom="out" aria-label="Zoom out">&minus;</button>
+    </div>
+    <div class="legend" id="legend"></div>
+    <aside class="panel" id="panel" hidden></aside>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th class="num">#</th><th>Country</th><th class="num">Score</th><th class="num" id="th-exact">Average</th><th class="num" id="th-cov">Coverage</th></tr></thead>
+      <tbody id="ranking"></tbody>
+    </table>
+  </div>
+</div>
+<div class="tooltip" id="tooltip"></div>
+
+<script>__D3__</script>
+<script>const WORLD = __WORLD__;</script>
+<script>const DATA = __DATA__;</script>
+<script>
+(() => {
+  const COLORS = { 1: "#d7191c", 2: "#fdae61", 3: "#ffffbf", 4: "#abd9e9", 5: "#2c7bb6" };
+  const TEXT_ON = { 1: "#fff", 2: "#1f2933", 3: "#1f2933", 4: "#1f2933", 5: "#fff" };
+  const LABELS = { 1: "Poor", 2: "Below average", 3: "Average", 4: "Above average", 5: "Good" };
+  const NOT_ASSESSED = "#e3e5e8";
+  const W = 960, H = 500;
+  const SMALL_AREA = 12;      // px² at zoom 1: below this a country also gets a dot marker
+  const MARKER_R = 4;
+  const REGIONS = {
+    world: null,
+    europe: [[-11, 34], [45, 58.5]],
+    latam: [[-118, -7], [-52, 33]],
+  };
+
+  const focus = new Set(DATA.focus);
+  const isConsolidated = v => v.kind !== "question";
+  const fmt = x => (Math.round(x * 100) / 100).toString();
+  let view = DATA.views[0];
+  let selected = null;
+
+  // ---------- header ----------
+  d3.select("#title").text(DATA.title);
+  d3.select("#subtitle").text(DATA.subtitle).style("display", DATA.subtitle ? null : "none");
+  d3.select("#stamp").text("Generated " + DATA.generated);
+
+  // ---------- map ----------
+  const features = WORLD.features;
+  const projection = d3.geoNaturalEarth1().fitExtent([[8, 8], [W - 8, H - 8]], WORLD);
+  const path = d3.geoPath(projection);
+  const svg = d3.select("#map");
+
+  const defs = svg.append("defs");
+  const hatch = defs.append("pattern").attr("id", "hatch").attr("patternUnits", "userSpaceOnUse")
+    .attr("width", 4).attr("height", 4).attr("patternTransform", "rotate(45)");
+  hatch.append("rect").attr("width", 4).attr("height", 4).attr("fill", "#c9c9c9");
+  hatch.append("rect").attr("width", 1.4).attr("height", 4).attr("fill", "#8f8f8f");
+
+  svg.append("rect").attr("width", W).attr("height", H).attr("fill", "#eef3f7");
+  const g = svg.append("g");
+  g.append("path").datum(d3.geoGraticule10()).attr("d", path)
+    .attr("fill", "none").attr("stroke", "#dde5ec").attr("stroke-width", 0.5).attr("vector-effect", "non-scaling-stroke");
+
+  const countries = g.append("g").selectAll("path").data(features).join("path")
+    .attr("d", path)
+    .attr("vector-effect", "non-scaling-stroke")
+    .style("cursor", d => focus.has(d.properties.iso3) ? "pointer" : "default");
+
+  const smallFocus = features.filter(f => focus.has(f.properties.iso3) && path.area(f) < SMALL_AREA);
+  const markers = g.append("g").selectAll("circle").data(smallFocus).join("circle")
+    .attr("cx", d => path.centroid(d)[0]).attr("cy", d => path.centroid(d)[1])
+    .attr("r", MARKER_R).attr("stroke", "#1f2933").attr("stroke-width", 0.8)
+    .attr("vector-effect", "non-scaling-stroke").style("cursor", "pointer");
+
+  const outline = g.append("path").attr("fill", "none").attr("stroke", "#111").attr("stroke-width", 2.2)
+    .attr("vector-effect", "non-scaling-stroke").attr("pointer-events", "none");
+
+  let k = 1;
+  const zoom = d3.zoom().scaleExtent([1, 60]).translateExtent([[0, 0], [W, H]])
+    .on("zoom", e => {
+      k = e.transform.k;
+      g.attr("transform", e.transform);
+      hatch.attr("patternTransform", `rotate(45) scale(${1 / k})`);
+      markers.attr("r", MARKER_R / k)
+        .attr("display", d => path.area(d) * k * k > 400 ? "none" : null);
+    });
+  svg.call(zoom).on("dblclick.zoom", null);
+
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const animated = ms => reducedMotion ? svg : svg.transition().duration(ms);
+
+  function zoomTo(region) {
+    const b = REGIONS[region];
+    if (!b) return animated(600).call(zoom.transform, d3.zoomIdentity);
+    const pts = [];
+    for (let i = 0; i <= 10; i++) {
+      const lon = b[0][0] + (b[1][0] - b[0][0]) * i / 10, lat = b[0][1] + (b[1][1] - b[0][1]) * i / 10;
+      pts.push(projection([lon, b[0][1]]), projection([lon, b[1][1]]), projection([b[0][0], lat]), projection([b[1][0], lat]));
+    }
+    const [x0, x1] = d3.extent(pts, p => p[0]), [y0, y1] = d3.extent(pts, p => p[1]);
+    const s = Math.min(W / (x1 - x0), H / (y1 - y0)) * 0.95;
+    const t = d3.zoomIdentity.translate(W / 2, H / 2).scale(s).translate(-(x0 + x1) / 2, -(y0 + y1) / 2);
+    animated(600).call(zoom.transform, t);
+  }
+  d3.selectAll("[data-zoom]").on("click", function () {
+    const z = this.dataset.zoom;
+    if (z === "in" || z === "out") animated(250).call(zoom.scaleBy, z === "in" ? 1.6 : 1 / 1.6);
+    else zoomTo(z);
+  });
+
+  // ---------- styling per view ----------
+  const result = (iso3, v = view) => v.results[iso3];
+  function fill(iso3) {
+    if (!focus.has(iso3)) return NOT_ASSESSED;
+    const r = result(iso3);
+    return r && r.category ? COLORS[r.category] : "url(#hatch)";
+  }
+  const partial = (iso3, v = view) => {
+    const r = result(iso3, v);
+    return r && r.value !== null && r.available < r.total;
+  };
+
+  function paint() {
+    countries
+      .attr("fill", d => fill(d.properties.iso3))
+      .attr("stroke", d => partial(d.properties.iso3) ? "#333" : "#fff")
+      .attr("stroke-width", d => partial(d.properties.iso3) ? 1.1 : 0.5)
+      .attr("stroke-dasharray", d => partial(d.properties.iso3) ? "3 2" : null);
+    markers.attr("fill", d => fill(d.properties.iso3));
+    // keep partial borders above neighbours
+    countries.filter(d => partial(d.properties.iso3)).raise();
+  }
+
+  // ---------- tooltip ----------
+  const tip = d3.select("#tooltip");
+  function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+  function showTip(event, iso3) {
+    if (!focus.has(iso3)) return hideTip();
+    tip.text(DATA.names[iso3]).style("opacity", 1)
+      .style("left", Math.min(event.clientX + 14, window.innerWidth - tip.node().offsetWidth - 8) + "px")
+      .style("top", (event.clientY + 14) + "px");
+    hover(iso3);
+  }
+  function hideTip() { tip.style("opacity", 0); hover(null); }
+
+  const featureBy = new Map(features.map(f => [f.properties.iso3, f]));
+  const hoverLine = g.append("path").attr("fill", "none").attr("stroke", "#111").attr("stroke-width", 1.4)
+    .attr("vector-effect", "non-scaling-stroke").attr("pointer-events", "none");
+  function hover(iso3) { hoverLine.attr("d", iso3 && focus.has(iso3) ? path(featureBy.get(iso3)) : null); }
+
+  for (const sel of [countries, markers]) {
+    sel.on("pointermove", (e, d) => showTip(e, d.properties.iso3))
+       .on("pointerleave", hideTip)
+       .on("click", (e, d) => { if (focus.has(d.properties.iso3)) select(d.properties.iso3); });
+  }
+
+  // ---------- detail panel ----------
+  const panel = d3.select("#panel");
+  function chip(cat) {
+    return cat ? `<span class="chip" style="background:${COLORS[cat]};color:${TEXT_ON[cat]}">${cat}</span>`
+               : `<span class="chip muted">–</span>`;
+  }
+  function row(label, r, total) {
+    const notes = [];
+    if (total && r.value === null) notes.push("No data");
+    else if (total) {
+      if (r.value !== r.category) notes.push(`Exact average ${fmt(r.value)}`);
+      if (r.available < r.total) notes.push(`based on ${r.available} of ${r.total} questions`);
+    }
+    let note = notes.join(", ");
+    note = note.charAt(0).toUpperCase() + note.slice(1);
+    return `<div class="prow${total ? " total" : ""}"><div class="prow-main"><span>${esc(label)}</span>${chip(r.category)}</div>`
+      + (note ? `<div class="prow-note">${note}</div>` : "") + `</div>`;
+  }
+  function renderPanel() {
+    if (!selected) { panel.attr("hidden", true); outline.attr("d", null); return; }
+    let html = `<button class="close" aria-label="Close">&times;</button><h2>${esc(DATA.names[selected])}</h2>`;
+    const overall = DATA.views.find(v => v.kind === "overall");
+    if (overall) html += row("Overall", overall.results[selected], true);
+    const dims = [...new Set(DATA.views.map(v => v.dimension).filter(Boolean))];
+    for (const dim of dims) {
+      html += `<h3>${esc(dim)}</h3>`;
+      const dv = DATA.views.find(v => v.kind === "dimension" && v.dimension === dim);
+      if (dv) html += row("Average", dv.results[selected], true);
+      for (const qv of DATA.views.filter(v => v.kind === "question" && v.dimension === dim))
+        html += row(qv.label, qv.results[selected], false);
+    }
+    panel.html(html).attr("hidden", null);
+    panel.select(".close").on("click", () => select(null));
+    outline.attr("d", path(featureBy.get(selected)));
+  }
+  function select(iso3) {
+    selected = iso3 === selected ? null : iso3;
+    renderPanel();
+    renderTable();
+  }
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && selected) select(null); });
+
+  // ---------- ranking table ----------
+  function renderTable() {
+    const cons = isConsolidated(view);
+    d3.select("#th-exact").style("display", cons ? null : "none");
+    d3.select("#th-cov").style("display", cons ? null : "none");
+    const rows = DATA.focus.map(c => ({ iso3: c, name: DATA.names[c], r: result(c) }));
+    rows.sort((a, b) => (b.r.value ?? -1) - (a.r.value ?? -1) || a.name.localeCompare(b.name));
+    let rank = 0, prev = undefined;
+    rows.forEach((x, i) => {
+      if (x.r.value === null) { x.rank = ""; return; }
+      if (x.r.value !== prev) { rank = i + 1; prev = x.r.value; }
+      x.rank = rank;
+    });
+    d3.select("#ranking").selectAll("tr").data(rows, d => d.iso3).join("tr")
+      .classed("active", d => d.iso3 === selected)
+      .html(d => {
+        const r = d.r, nodata = r.value === null;
+        let h = `<td class="num muted">${d.rank}</td><td>${esc(d.name)}</td><td class="num">${nodata ? '<span class="muted">no data</span>' : chip(r.category)}</td>`;
+        if (cons) h += `<td class="num">${nodata ? "" : fmt(r.value)}</td><td class="num muted">${r.available}/${r.total}</td>`;
+        return h;
+      })
+      .on("click", (e, d) => select(d.iso3))
+      .on("pointerenter", (e, d) => hover(d.iso3))
+      .on("pointerleave", () => hover(null))
+      .order();
+  }
+
+  // ---------- legend ----------
+  function renderLegend() {
+    let h = "";
+    for (let c = 5; c >= 1; c--) h += `<div class="legend-row"><span class="sw" style="background:${COLORS[c]}"></span>${c} ${LABELS[c]}</div>`;
+    h += `<div class="legend-sep"></div>`;
+    h += `<div class="legend-row"><span class="sw hatch"></span>No data</div>`;
+    h += `<div class="legend-row"><span class="sw" style="background:${NOT_ASSESSED}"></span>Not assessed</div>`;
+    if (isConsolidated(view)) h += `<div class="legend-row"><span class="sw partial"></span>Incomplete data</div>`;
+    d3.select("#legend").html(h);
+  }
+
+  // ---------- tabs ----------
+  // Top level: Overall (if any) and one tab per dimension. Second level: the dimension
+  // average followed by its questions.
+  const groups = [];
+  const overallView = DATA.views.find(v => v.kind === "overall");
+  if (overallView) groups.push({ label: "Overall", views: [overallView] });
+  for (const dim of new Set(DATA.views.map(v => v.dimension).filter(Boolean))) {
+    groups.push({ label: dim, views: DATA.views.filter(v => v.dimension === dim) });
+  }
+  const groupOf = v => groups.find(g => g.views.includes(v));
+  const subLabel = v => v.kind === "question" ? v.label : "Average";
+  const heading = v => v.kind === "overall" ? "Overall" : v.kind === "dimension" ? `${v.dimension} average` : v.label;
+
+  d3.select("#tabs").selectAll("button").data(groups).join("button")
+    .attr("class", "tab").attr("role", "tab")
+    .text(g => g.label)
+    .on("click", (e, g) => setView(g.views[0]));
+
+  function setView(v) {
+    view = v;
+    const group = groupOf(v);
+    d3.selectAll(".tab").attr("aria-selected", g => g === group);
+    d3.select("#subtabs").selectAll("button").data(group.views.length > 1 ? group.views : []).join("button")
+      .attr("class", "subtab").attr("role", "tab")
+      .attr("aria-selected", s => s === v)
+      .text(subLabel)
+      .on("click", (e, s) => setView(s));
+    d3.select("#view-desc").text(v.kind === "question" ? v.description : "").style("display", v.kind === "question" && v.description ? null : "none");
+    paint(); renderLegend(); renderTable(); renderPanel();
+  }
+
+  // ---------- PNG export ----------
+  d3.select("#export").on("click", async () => {
+    const scale = 2, pad = 24, headH = 64, legendH = 34;
+    const clone = svg.node().cloneNode(true);
+    clone.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+    clone.setAttribute("width", W * scale); clone.setAttribute("height", H * scale);
+    const url = URL.createObjectURL(new Blob([new XMLSerializer().serializeToString(clone)], { type: "image/svg+xml" }));
+    const img = new Image();
+    await new Promise((ok, fail) => { img.onload = ok; img.onerror = fail; img.src = url; });
+    URL.revokeObjectURL(url);
+
+    const cw = W * scale + pad * 2 * scale, ch = (H + headH + legendH) * scale + pad * 2 * scale;
+    const canvas = Object.assign(document.createElement("canvas"), { width: cw, height: ch });
+    const ctx = canvas.getContext("2d");
+    ctx.scale(scale, scale);
+    ctx.fillStyle = "#fff"; ctx.fillRect(0, 0, cw, ch);
+    ctx.fillStyle = "#1f2933"; ctx.font = "600 20px Segoe UI, Arial, sans-serif";
+    ctx.fillText(`${DATA.title}: ${heading(view)}`, pad, pad + 20);
+    ctx.fillStyle = "#5f6b7a"; ctx.font = "13px Segoe UI, Arial, sans-serif";
+    const sub = [DATA.subtitle, view.kind === "question" ? view.description : ""].filter(Boolean).join(". ");
+    ctx.fillText(sub || `Generated ${DATA.generated}`, pad, pad + 44);
+    if (sub) { ctx.textAlign = "right"; ctx.fillText(`Generated ${DATA.generated}`, pad + W, pad + 44); ctx.textAlign = "left"; }
+    ctx.drawImage(img, pad, pad + headH, W, H);
+
+    let x = pad, y = pad + headH + H + 22;
+    const item = (color, label, hatched, dashed) => {
+      ctx.fillStyle = color; ctx.fillRect(x, y - 11, 14, 14);
+      if (hatched) { ctx.fillStyle = "#8f8f8f"; for (let i = -14; i < 14; i += 4) { ctx.save(); ctx.beginPath(); ctx.rect(x, y - 11, 14, 14); ctx.clip(); ctx.fillRect(x + i, y - 11, 1.4, 20); ctx.restore(); } }
+      ctx.strokeStyle = dashed ? "#333" : "rgba(0,0,0,.2)"; ctx.setLineDash(dashed ? [3, 2] : []);
+      ctx.strokeRect(x, y - 11, 14, 14); ctx.setLineDash([]);
+      ctx.fillStyle = "#1f2933"; ctx.fillText(label, x + 20, y);
+      x += 26 + ctx.measureText(label).width + 14;
+    };
+    for (let c = 1; c <= 5; c++) item(COLORS[c], `${c} ${LABELS[c]}`);
+    item("#c9c9c9", "No data", true);
+    item(NOT_ASSESSED, "Not assessed");
+    if (isConsolidated(view)) item("#fff", "Incomplete data", false, true);
+
+    const a = document.createElement("a");
+    a.download = `${DATA.title} - ${heading(view)}.png`.replace(/[\\/:*?"<>|]/g, "_");
+    a.href = canvas.toDataURL("image/png");
+    a.click();
+  });
+
+  setView(groups[0].views[0]);
+})();
+</script>
+</body>
+</html>
